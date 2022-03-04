@@ -1,0 +1,47 @@
+---
+- name: to implement ci/cd pipeline
+  hosts: all
+  vars:
+   - a: present
+   - b: yes
+   - c: maven
+   - d: tomcat9  
+  tasks:
+   - name: continuous download
+     git:
+      repo: https://github.com/intelliqittrainings/maven.git
+      dest: /home/ubuntu/pract    #directory where you want to clone the repo in slave
+   - name: to install maven
+     apt:
+      name: "{{c}}"
+      state: "{{a}}"
+      update_cache: "{{b}}"
+   - name: to build artifact/continuos build
+     shell: mvn package /home/ubuntu/pract/webapp/ #need to give path of the pom.xml
+   - name: to fetch war file from slave to master
+     fetch:
+      src: /home/ubuntu/pract/webapp/target/webapp.war
+      dest: /home/ubuntu      # during deploy need to copy war file to tomcat. so need to use fetch so war file will be present in master-src
+   - name: to install tomcat9
+     apt:
+      name: "{{d}}"
+      state: "{{a}}"
+      update_cache: "{{b}}"
+   - name: to change content in user.xml
+     copy:
+      src: /home/ubuntu/playbookss/tomcat_user.xml     #create file tomcat-user.xml so that it replaces contents of this xml in slave
+      dest: /etc/tomcat9/tomcat-user.xml
+   - name: to deploy 
+     copy:
+      src: /home/ubuntu/172.31.83.39/home/ubuntu/pract/webapp/target/webapp.war   
+      dest: /var/lib/tomcat9/webapps/target/abc.war
+   - name: to test
+     git:
+      repo: https://github.com/intelliqittrainings/FunctionalTesting.git
+      dest: /home/ubuntu/test
+   - name: continuous test
+     shell: java -jar /home/ubuntu/test/testing.jar
+   - name: to print output
+     debug:
+      msg: CI/CD implemented successfully   
+...

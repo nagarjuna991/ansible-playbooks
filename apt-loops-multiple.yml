@@ -1,0 +1,16 @@
+---
+- name: install & remove s/w
+  hosts: all
+  tasks:
+   - name: s/w using loop
+     apt:
+      name: "{{item.a}}"
+      state: "{{item.b}}"
+      update_cache: "{{item.c}}"
+     with_items:
+      - {a: git, b: latest, c: yes}
+      - {a: maven, b: present, c: no}
+      - {a: tree, b: present, c: yes}
+      - {a: openjdk-11-jdk, b: absent, c: yes}
+
+...

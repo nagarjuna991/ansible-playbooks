@@ -1,0 +1,20 @@
+---
+- name: install s/w using loops
+  hosts: all
+  tasks:
+   - name: install s/w
+     apt:
+      name: "{{item}}"
+      state: absent
+      update_cache: yes
+      purge: yes
+     with_items:
+      - nginx
+      - wget
+      - docker
+      - apache2
+      - tomcat9
+      - maven
+      - tree
+
+...
